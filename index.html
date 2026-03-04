@@ -1,0 +1,937 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vocabulaire du Coran</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+    <style>
+      :root {
+        --yellow: #ffd84d;
+        --yellow-dark: #f5c842;
+        --grey-light: #f5f5f5;
+        --white: #ffffff;
+        --text-main: #18181b;
+        --text-muted: #6b7280;
+        --accent: #16a34a;
+        --danger: #ff0000;
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      body {
+        margin: 0;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: var(--grey-light);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+      }
+
+      .app {
+        width: 100%;
+        max-width: 520px;
+        padding: 16px;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      h1 {
+        font-size: 1.2rem;
+        margin: 0;
+      }
+
+      .subtitle {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 4px;
+      }
+
+      .pill {
+        font-size: 0.7rem;
+        border-radius: 999px;
+        padding: 4px 10px;
+        border: 1px solid #e4e4e7;
+        background: var(--white);
+        color: var(--text-muted);
+      }
+
+      .steps-bar {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        margin: 10px 0 12px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e4e4e7;
+      }
+
+      .step-item {
+        padding: 6px 4px;
+        text-align: center;
+        font-size: 0.7rem;
+        font-weight: 500;
+        background: var(--yellow);
+        border-right: 1px solid #facc15;
+      }
+
+      .step-item:last-child {
+        border-right: none;
+      }
+
+      .step-item.alt {
+        background: #4b4b4f;
+        color: #f9fafb;
+      }
+
+      .stats {
+        display: flex;
+        gap: 8px;
+        margin: 8px 0;
+        flex-wrap: wrap;
+      }
+
+      .stat {
+        flex: 1;
+        min-width: 0;
+        padding: 6px 8px;
+        border-radius: 8px;
+        background: #f9fafb;
+        border: 1px solid #e4e4e7;
+        font-size: 0.7rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .stat-label {
+        color: var(--text-muted);
+      }
+
+      .stat-value {
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      .progress-track {
+        width: 100%;
+        height: 5px;
+        border-radius: 999px;
+        background: #e4e4e7;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #22c55e, #4ade80);
+        transition: width 0.25s ease-out;
+      }
+
+      .deck-selector {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+
+      .deck-btn {
+        border-radius: 999px;
+        border: 1px solid #e4e4e7;
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        background: var(--white);
+        color: var(--text-muted);
+        white-space: nowrap;
+      }
+
+      .deck-btn.active {
+        border-color: var(--yellow-dark);
+        background: var(--yellow);
+        color: #1f2937;
+      }
+
+      .card {
+        position: relative;
+        border-radius: 12px;
+        padding: 14px 12px 12px;
+        background: var(--white);
+        border: 1px solid #e4e4e7;
+        margin-bottom: 10px;
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .tag {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        color: var(--text-muted);
+      }
+
+      .due-tag {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+
+      .arabic {
+        font-size: 1.7rem;
+        text-align: center;
+        direction: rtl;
+        font-family: "Scheherazade", "Amiri", system-ui, sans-serif;
+        margin-bottom: 6px;
+      }
+
+      .translit {
+        font-size: 0.85rem;
+        text-align: center;
+        color: var(--text-muted);
+        margin-bottom: 4px;
+      }
+
+      .translation {
+        font-size: 0.95rem;
+        text-align: center;
+        color: var(--accent);
+        opacity: 0;
+        transform: translateY(4px);
+        transition:
+          opacity 0.18s ease-out,
+          transform 0.18s ease-out;
+      }
+
+      .translation.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .definition {
+        font-size: 0.8rem;
+        text-align: center;
+        color: var(--text-muted);
+        margin-top: 4px;
+        line-height: 1.3;
+      }
+
+      .show-btn {
+        border-radius: 999px;
+        border: 1px dashed #d4d4d8;
+        padding: 6px 10px;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 0.7rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        align-self: center;
+        margin-top: 6px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        flex: 1;
+        padding: 8px 6px;
+        border-radius: 999px;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #0f172a;
+      }
+
+      .btn-known {
+        background: #22c55e;
+        color: white;
+      }
+
+      .btn-unknown {
+        background: red;
+        color: white;
+      }
+
+      .empty-state {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-align: center;
+        padding: 24px 10px;
+        border-radius: 10px;
+        border: 1px dashed #d4d4d8;
+        background: #f9fafb;
+      }
+
+      .footer-text {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-align: center;
+        margin-top: 4px;
+        margin-bottom: 8px;
+      }
+
+      .add-card {
+        margin-top: 8px;
+        padding: 10px 10px 12px;
+        border-radius: 10px;
+        background: var(--white);
+        border: 1px solid #e4e4e7;
+      }
+
+      .add-title {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        font-weight: 500;
+      }
+
+      .field-row {
+        display: flex;
+        gap: 6px;
+      }
+
+      .input {
+        width: 100%;
+        padding: 6px 8px;
+        border-radius: 8px;
+        border: 1px solid #d4d4d8;
+        background: #f9fafb;
+        color: var(--text-main);
+        font-size: 0.8rem;
+      }
+
+      .input::placeholder {
+        color: #a1a1aa;
+      }
+
+      .small-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
+      }
+
+      .btn-add {
+        margin-top: 8px;
+        width: 100%;
+        padding: 8px;
+        border-radius: 999px;
+        border: none;
+        background: #fbbf24;
+        color: #1f2937;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .note-add {
+        margin-top: 4px;
+        font-size: 0.68rem;
+        color: var(--text-muted);
+      }
+
+      .error {
+        color: var(--danger);
+        font-size: 0.7rem;
+        margin-top: 4px;
+      }
+
+      .card-toolbar {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        gap: 4px;
+      }
+
+      .icon-btn {
+        border: none;
+        background: #f4f4f5;
+        border-radius: 999px;
+        padding: 3px 6px;
+        font-size: 0.65rem;
+        color: #27272a;
+      }
+
+      .icon-btn.danger {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <div>
+          <h1>Vocabulaire du Coran</h1>
+          <div class="subtitle">Flashcards arabes · FR · révision espacée</div>
+        </div>
+        <div class="pill">v1 · offline</div>
+      </header>
+
+      <div class="steps-bar">
+        <div class="step-item">Problème</div>
+        <div class="step-item alt">Je cherche une app</div>
+        <div class="step-item">Ajouter des mots</div>
+        <div class="step-item alt">Apprendre</div>
+        <div class="step-item">Résultats</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">À réviser maintenant</span>
+          <span class="stat-value" id="stat-due">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Révisés aujourd'hui</span>
+          <span class="stat-value" id="stat-today">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Maîtrisés</span>
+          <span class="stat-value" id="stat-mastered">0</span>
+        </div>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div class="deck-selector" id="deck-selector"></div>
+
+      <div id="card-container"></div>
+
+      <div class="footer-text">
+        Appuie sur « Je connais » pour espacer les révisions, ou « Je ne connais pas » pour revoir
+        rapidement ce mot.
+      </div>
+
+      <div class="add-card">
+        <div class="add-title">Ajouter un mot appris (Mes mots)</div>
+        <div class="field-row">
+          <input id="input-arabic" class="input" placeholder="Arabe (ex : رَحْمَة)" />
+          <input id="input-translit" class="input" placeholder="Translit. (rahma)" />
+        </div>
+        <div class="small-row">
+          <input id="input-fr" class="input" placeholder="Traduction FR (miséricorde)" />
+        </div>
+        <div class="small-row">
+          <input
+            id="input-theme"
+            class="input"
+            placeholder="Thème / pack (ex : Mes mots de rahma)"
+          />
+        </div>
+        <div class="small-row">
+          <input
+            id="input-def"
+            class="input"
+            placeholder="Définition courte (sens d’après Coran/Sunna)"
+          />
+        </div>
+        <button id="btn-add-card" class="btn-add">Ajouter à « Mes mots »</button>
+        <div id="add-error" class="error" style="display: none"></div>
+        <div class="note-add">
+          Minimum : arabe + traduction. Les autres champs améliorent ta compréhension.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const STORAGE_KEY = "quran_vocab_srs_v1";
+      const STORAGE_CUSTOM_DECK = "quran_vocab_custom_deck_v1";
+      const CUSTOM_DECK_KEY = "Mes mots";
+
+      const INTERVALS = [0, 5, 30, 12 * 60, 24 * 60 * 3, 24 * 60 * 7];
+
+      const BASE_DECKS = {
+        "Pack 1: Foi": [
+          {
+            id: "allah",
+            arabic: "اللّٰه",
+            translit: "Allah",
+            fr: "Allah",
+            def: "Nom propre du seul vrai Dieu, le Créateur et Seigneur de tout, qui seul mérite l’adoration.",
+          },
+          {
+            id: "rabb",
+            arabic: "رَبّ",
+            translit: "rabb",
+            fr: "Seigneur",
+            def: "Celui qui crée, possède, organise, élève et prend soin de Ses créatures en permanence.",
+          },
+          {
+            id: "din",
+            arabic: "دِين",
+            translit: "dîn",
+            fr: "religion",
+            def: "La voie de vie faite de croyances, paroles et actes par laquelle on obéit à Allah.",
+          },
+          {
+            id: "iman",
+            arabic: "إِيمَان",
+            translit: "îmân",
+            fr: "foi",
+            def: "Croire en Allah, Ses anges, Ses livres, Ses messagers, le Jour dernier et le destin, avec le cœur, la parole et les actes.",
+          },
+          {
+            id: "islam",
+            arabic: "إِسْلَام",
+            translit: "islâm",
+            fr: "soumission (Islam)",
+            def: "Se soumettre à Allah par le tawhid, Lui obéir et s’éloigner du shirk, selon le Coran et la Sunna.",
+          },
+        ],
+        "Pack 2: Temps & lieu": [
+          {
+            id: "yaum",
+            arabic: "يَوْم",
+            translit: "yawmun",
+            fr: "jour",
+            def: "Période de temps d’un lever de soleil à l’autre ; le Coran parle aussi du Jour dernier, le Jour du Jugement.",
+          },
+          {
+            id: "layl",
+            arabic: "لَيْل",
+            translit: "layl",
+            fr: "nuit",
+            def: "La nuit, moment de calme où sont recommandées la prière nocturne et l’invocation.",
+          },
+          {
+            id: "ard",
+            arabic: "أَرْض",
+            translit: "ard",
+            fr: "terre",
+            def: "La terre créée par Allah, étendue pour les humains, lieu d’épreuve avant l’au-delà.",
+          },
+          {
+            id: "sama",
+            arabic: "سَمَاء",
+            translit: "samâʼ",
+            fr: "ciel",
+            def: "Les cieux élevés au-dessus de nous, contenant les signes de la puissance et de la miséricorde d’Allah.",
+          },
+          {
+            id: "dunya",
+            arabic: "دُنْيَا",
+            translit: "dunyâ",
+            fr: "vie d’ici-bas",
+            def: "La vie présente, proche et éphémère, souvent opposée à l’au-delà dans le Coran.",
+          },
+        ],
+        "Pack 3: Gens & actions": [
+          {
+            id: "alladhina",
+            arabic: "الَّذِينَ",
+            translit: "alladhîna",
+            fr: "ceux qui",
+            def: "Expression qui introduit souvent dans le Coran la description d’un groupe, comme ceux qui croient ou ceux qui mécroient.",
+          },
+          {
+            id: "nas",
+            arabic: "النَّاس",
+            translit: "an-nâs",
+            fr: "les gens",
+            def: "L’ensemble des humains ; Allah s’adresse souvent à eux dans le Coran, comme dans la sourate An-Nâs.",
+          },
+          {
+            id: "qawm",
+            arabic: "قَوْم",
+            translit: "qawm",
+            fr: "peuple",
+            def: "Un groupe ou une communauté de personnes, souvent mentionné avec les prophètes envoyés à leur peuple.",
+          },
+          {
+            id: "aminu",
+            arabic: "آمَنُوا",
+            translit: "âmanû",
+            fr: "ils ont cru",
+            def: "Verbe au passé pour « ceux qui ont cru », qui désigne les croyants sincères dans le Coran.",
+          },
+          {
+            id: "kafaru",
+            arabic: "كَفَرُوا",
+            translit: "kafarû",
+            fr: "ils ont mécru",
+            def: "Verbe au passé pour « ceux qui ont mécru », c’est-à-dire ceux qui rejettent la foi après que la preuve soit venue.",
+          },
+        ],
+      };
+
+      const state = {
+        currentDeckName: Object.keys(BASE_DECKS)[0],
+        data: {},
+        todayKey: getTodayKey(),
+        todayReviews: 0,
+        customDeck: [],
+      };
+
+      function getTodayKey() {
+        const d = new Date();
+        return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.data) state.data = parsed.data;
+            if (parsed.todayKey === state.todayKey && typeof parsed.todayReviews === "number") {
+              state.todayReviews = parsed.todayReviews;
+            }
+          }
+        } catch (e) {
+          console.warn("loadState error", e);
+        }
+
+        try {
+          const customRaw = localStorage.getItem(STORAGE_CUSTOM_DECK);
+          if (customRaw) {
+            const parsed = JSON.parse(customRaw);
+            if (Array.isArray(parsed)) {
+              state.customDeck = parsed;
+            }
+          }
+        } catch (e) {
+          console.warn("load custom deck error", e);
+        }
+      }
+
+      function saveState() {
+        const payload = {
+          data: state.data,
+          todayKey: state.todayKey,
+          todayReviews: state.todayReviews,
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+        localStorage.setItem(STORAGE_CUSTOM_DECK, JSON.stringify(state.customDeck));
+      }
+
+      function buildDecks() {
+        const decks = { ...BASE_DECKS };
+        if (state.customDeck.length > 0) {
+          decks[CUSTOM_DECK_KEY] = state.customDeck;
+        }
+        return decks;
+      }
+
+      function ensureCardMeta(cardId) {
+        if (!state.data[cardId]) {
+          state.data[cardId] = {
+            intervalIndex: 0,
+            dueAt: Date.now(),
+            seen: 0,
+            correctCount: 0,
+          };
+        }
+        return state.data[cardId];
+      }
+
+      function getDeckCards(deckName) {
+        const decks = buildDecks();
+        return decks[deckName] || [];
+      }
+
+      function getDueCards(deckName) {
+        const now = Date.now();
+        return getDeckCards(deckName).filter((card) => {
+          const meta = ensureCardMeta(card.id);
+          return meta.dueAt <= now;
+        });
+      }
+
+      function getMasteredCount(deckName) {
+        const cards = getDeckCards(deckName);
+        return cards.filter((card) => {
+          const meta = state.data[card.id];
+          return meta && meta.intervalIndex >= INTERVALS.length - 1;
+        }).length;
+      }
+
+      function updateStats() {
+        const due = getDueCards(state.currentDeckName).length;
+        document.getElementById("stat-due").textContent = due;
+        document.getElementById("stat-today").textContent = state.todayReviews;
+        document.getElementById("stat-mastered").textContent = getMasteredCount(
+          state.currentDeckName,
+        );
+
+        const total = getDeckCards(state.currentDeckName).length || 1;
+        const mastered = getMasteredCount(state.currentDeckName);
+        const p = Math.round((mastered / total) * 100);
+        document.getElementById("progress-bar").style.width = p + "%";
+      }
+
+      function renderDeckSelector() {
+        const container = document.getElementById("deck-selector");
+        container.innerHTML = "";
+        const decks = buildDecks();
+        Object.keys(decks).forEach((name) => {
+          const btn = document.createElement("button");
+          btn.textContent = name;
+          btn.className = "deck-btn" + (name === state.currentDeckName ? " active" : "");
+          btn.addEventListener("click", () => {
+            state.currentDeckName = name;
+            renderAll();
+          });
+          container.appendChild(btn);
+        });
+
+        if (!decks[state.currentDeckName]) {
+          state.currentDeckName = Object.keys(decks)[0];
+        }
+      }
+
+      function isCustomCard(card) {
+        return card.id.startsWith("user_");
+      }
+
+      function deleteCustomCard(card) {
+        state.customDeck = state.customDeck.filter((c) => c.id !== card.id);
+        delete state.data[card.id];
+        saveState();
+        renderAll();
+      }
+
+      function startEditCustomCard(card) {
+        const container = document.getElementById("card-container");
+        container.innerHTML = "";
+
+        const cardEl = document.createElement("div");
+        cardEl.className = "card";
+
+        cardEl.innerHTML = `
+          <div class="card-header">
+            <div class="tag">${CUSTOM_DECK_KEY} · édition</div>
+          </div>
+          <div>
+            <div class="small-row" style="margin-bottom:6px;">
+              <input id="edit-arabic" class="input" value="${card.arabic}" />
+              <input id="edit-translit" class="input" value="${card.translit || ""}" />
+            </div>
+            <div class="small-row">
+              <input id="edit-fr" class="input" value="${card.fr}" />
+            </div>
+            <div class="small-row">
+              <input id="edit-def" class="input" value="${card.def || ""}" />
+            </div>
+          </div>
+          <div class="actions" style="margin-top:12px;">
+            <button class="btn btn-unknown" id="btn-cancel-edit">Annuler</button>
+            <button class="btn btn-known" id="btn-save-edit">Enregistrer</button>
+          </div>
+        `;
+
+        container.appendChild(cardEl);
+
+        document.getElementById("btn-cancel-edit").onclick = () => renderAll();
+        document.getElementById("btn-save-edit").onclick = () => {
+          const arabic = document.getElementById("edit-arabic").value.trim();
+          const translit = document.getElementById("edit-translit").value.trim();
+          const fr = document.getElementById("edit-fr").value.trim();
+          const def = document.getElementById("edit-def").value.trim();
+
+          const idx = state.customDeck.findIndex((c) => c.id === card.id);
+          if (idx !== -1) {
+            state.customDeck[idx] = {
+              ...state.customDeck[idx],
+              arabic,
+              translit,
+              fr,
+              def,
+            };
+          }
+          saveState();
+          renderAll();
+        };
+      }
+
+      function renderCard() {
+        const container = document.getElementById("card-container");
+        const dueCards = getDueCards(state.currentDeckName);
+
+        if (dueCards.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+              Aucun mot à réviser maintenant pour ce pack.<br><br>
+              Reviens plus tard ou choisis un autre pack.
+            </div>
+          `;
+          return;
+        }
+
+        const card = dueCards[0];
+        const meta = ensureCardMeta(card.id);
+        const isNew = meta.seen === 0;
+        const dueLabel = meta.intervalIndex === 0 ? "nouveau" : "intervalle #" + meta.intervalIndex;
+
+        container.innerHTML = "";
+        const cardEl = document.createElement("div");
+        cardEl.className = "card";
+
+        cardEl.innerHTML = `
+          <div class="card-header">
+            <div class="tag">${state.currentDeckName}</div>
+            <div class="due-tag">${isNew ? "Nouveau mot" : "À réviser · " + dueLabel}</div>
+          </div>
+          <div>
+            <div class="arabic">${card.arabic}</div>
+            <div class="translit">${card.translit || ""}</div>
+            <div class="translation" id="translation">
+              ${card.fr}
+              <div class="definition">${card.def || ""}</div>
+            </div>
+            <button class="show-btn" id="show-btn">
+              Afficher la traduction + définition
+            </button>
+          </div>
+          <div class="actions">
+            <button class="btn btn-unknown" id="btn-unknown">Je ne connais pas</button>
+            <button class="btn btn-known" id="btn-known">Je connais</button>
+          </div>
+        `;
+
+        if (isCustomCard(card)) {
+          const toolbar = document.createElement("div");
+          toolbar.className = "card-toolbar";
+          toolbar.innerHTML = `
+            <button class="icon-btn" id="btn-edit-card">✏️</button>
+            <button class="icon-btn danger" id="btn-delete-card">🗑</button>
+          `;
+          cardEl.appendChild(toolbar);
+        }
+
+        container.appendChild(cardEl);
+
+        const translationEl = document.getElementById("translation");
+        const showBtn = document.getElementById("show-btn");
+
+        showBtn.addEventListener("click", () => {
+          translationEl.classList.add("visible");
+          showBtn.style.display = "none";
+        });
+
+        document.getElementById("btn-known").addEventListener("click", () => {
+          onAnswer(card, true);
+        });
+
+        document.getElementById("btn-unknown").addEventListener("click", () => {
+          translationEl.classList.add("visible");
+          setTimeout(() => onAnswer(card, false), 250);
+        });
+
+        if (isCustomCard(card)) {
+          document.getElementById("btn-delete-card").onclick = () => {
+            if (confirm("Supprimer ce mot ?")) {
+              deleteCustomCard(card);
+            }
+          };
+          document.getElementById("btn-edit-card").onclick = () => {
+            startEditCustomCard(card);
+          };
+        }
+      }
+
+      function onAnswer(card, known) {
+        const meta = ensureCardMeta(card.id);
+        meta.seen += 1;
+
+        if (known) {
+          meta.correctCount += 1;
+          if (meta.intervalIndex < INTERVALS.length - 1) {
+            meta.intervalIndex += 1;
+          }
+        } else {
+          meta.correctCount = 0;
+          meta.intervalIndex = 0;
+        }
+
+        const now = Date.now();
+        const intervalMinutes = INTERVALS[meta.intervalIndex];
+        meta.dueAt = now + intervalMinutes * 60 * 1000;
+
+        state.todayReviews += 1;
+        saveState();
+        updateStats();
+        renderCard();
+      }
+
+      function handleAddCard() {
+        const arabic = document.getElementById("input-arabic").value.trim();
+        const translit = document.getElementById("input-translit").value.trim();
+        const fr = document.getElementById("input-fr").value.trim();
+        const theme = document.getElementById("input-theme").value.trim();
+        const def = document.getElementById("input-def").value.trim();
+        const errorEl = document.getElementById("add-error");
+
+        if (!arabic || !fr) {
+          errorEl.textContent = "Merci d’au minimum renseigner l’arabe et la traduction française.";
+          errorEl.style.display = "block";
+          return;
+        }
+
+        errorEl.style.display = "none";
+
+        const safeTheme = theme || CUSTOM_DECK_KEY;
+        const id = "user_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
+
+        const newCard = {
+          id,
+          arabic,
+          translit,
+          fr,
+          def,
+          theme: safeTheme,
+        };
+
+        state.customDeck.push(newCard);
+        saveState();
+
+        document.getElementById("input-arabic").value = "";
+        document.getElementById("input-translit").value = "";
+        document.getElementById("input-fr").value = "";
+        document.getElementById("input-theme").value = "";
+        document.getElementById("input-def").value = "";
+
+        state.currentDeckName = CUSTOM_DECK_KEY;
+        renderAll();
+      }
+
+      function renderAll() {
+        renderDeckSelector();
+        updateStats();
+        renderCard();
+      }
+
+      loadState();
+      renderAll();
+      document.getElementById("btn-add-card").addEventListener("click", handleAddCard);
+    </script>
+  </body>
+</html>
